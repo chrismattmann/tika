@@ -154,7 +154,9 @@ public class PDFParser extends AbstractParser {
             }
             metadata.set(Metadata.CONTENT_TYPE, "application/pdf");
             extractMetadata(pdfDocument, metadata);
-            PDF2XHTML.process(pdfDocument, handler, context, metadata, localConfig);
+            if (handler != null) {
+                PDF2XHTML.process(pdfDocument, handler, context, metadata, localConfig);
+            }
             
         } finally {
             if (pdfDocument != null) {
@@ -162,7 +164,6 @@ public class PDFParser extends AbstractParser {
             }
             tmp.dispose();
         }
-        handler.endDocument();
     }
 
    
@@ -184,13 +185,13 @@ public class PDFParser extends AbstractParser {
         }
         PDDocumentInformation info = document.getDocumentInformation();
         metadata.set(PagedText.N_PAGES, document.getNumberOfPages());
-        extractMultilingualItems(metadata, TikaCoreProperties.TITLE, info.getTitle(), (XMPSchema)dcSchema);
+        extractMultilingualItems(metadata, TikaCoreProperties.TITLE, info.getTitle(), dcSchema);
         extractDublinCoreListItems(metadata, TikaCoreProperties.CREATOR, info.getAuthor(), dcSchema);
         extractDublinCoreListItems(metadata, TikaCoreProperties.CONTRIBUTOR, null, dcSchema);
         addMetadata(metadata, TikaCoreProperties.CREATOR_TOOL, info.getCreator());
         addMetadata(metadata, TikaCoreProperties.KEYWORDS, info.getKeywords());
         addMetadata(metadata, "producer", info.getProducer());
-        extractMultilingualItems(metadata, TikaCoreProperties.DESCRIPTION, null, (XMPSchema)dcSchema);
+        extractMultilingualItems(metadata, TikaCoreProperties.DESCRIPTION, null, dcSchema);
 
         // TODO: Move to description in Tika 2.0
         addMetadata(metadata, TikaCoreProperties.TRANSITION_SUBJECT_TO_OO_SUBJECT, info.getSubject());
@@ -212,10 +213,8 @@ public class PDFParser extends AbstractParser {
         
         // All remaining metadata is custom
         // Copy this over as-is
-        List<String> handledMetadata = Arrays.asList(new String[] {
-             "Author", "Creator", "CreationDate", "ModDate",
-             "Keywords", "Producer", "Subject", "Title", "Trapped"
-        });
+        List<String> handledMetadata = Arrays.asList("Author", "Creator", "CreationDate", "ModDate",
+             "Keywords", "Producer", "Subject", "Title", "Trapped");
         for(COSName key : info.getDictionary().keySet()) {
             String name = key.getName();
             if(! handledMetadata.contains(name)) {
@@ -228,10 +227,11 @@ public class PDFParser extends AbstractParser {
         //Caveats:
         //    there is currently a fair amount of redundancy
         //    TikaCoreProperties.FORMAT can be multivalued
-        //    There are also three potential pdf specific version keys: pdf:PDFVersion, pdfa:PDFVersion, pdf:PDFExtensionVersion
+        //    There are also three potential pdf specific version keys: pdf:PDFVersion, pdfa:PDFVersion, pdf:PDFExtensionVersion        
         metadata.set("pdf:PDFVersion", Float.toString(document.getDocument().getVersion()));
         metadata.add(TikaCoreProperties.FORMAT.getName(), 
-            MEDIA_TYPE.toString()+"; version="+Float.toString(document.getDocument().getVersion()));
+            MEDIA_TYPE.toString()+"; version="+
+            Float.toString(document.getDocument().getVersion()));
 
         try {           
             if( xmp != null ) {

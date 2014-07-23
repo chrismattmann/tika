@@ -125,9 +125,9 @@ public class ImageMetadataExtractor {
     protected void handle(Iterator<Directory> directories) throws MetadataException {
         while (directories.hasNext()) {
             Directory directory = directories.next();
-            for (int i = 0; i < handlers.length; i++) {
-                if (handlers[i].supports(directory.getClass())) {
-                    handlers[i].handle(directory, metadata);
+            for (DirectoryHandler handler : handlers) {
+                if (handler.supports(directory.getClass())) {
+                    handler.handle(directory, metadata);
                 }
             }
         }
@@ -162,9 +162,7 @@ public class ImageMetadataExtractor {
         public void handle(Directory directory, Metadata metadata)
                 throws MetadataException {
             if (directory.getTags() != null) {
-                Iterator<?> tags = directory.getTags().iterator();
-                while (tags.hasNext()) {
-                    Tag tag = (Tag) tags.next();
+                for (Tag tag : directory.getTags()) {
                     metadata.set(tag.getTagName(), tag.getDescription());
                 }
             }
@@ -183,9 +181,7 @@ public class ImageMetadataExtractor {
         public void handle(Directory directory, Metadata metadata)
                 throws MetadataException {
             if (directory.getTags() != null) {
-                Iterator<?> tags = directory.getTags().iterator();
-                while (tags.hasNext()) {
-                    Tag tag = (Tag) tags.next();
+                for (Tag tag : directory.getTags()) {
                     String name = tag.getTagName();
                     if (!MetadataFields.isMetadataField(name) && tag.getDescription() != null) {
                           String value = tag.getDescription().trim();
@@ -249,7 +245,13 @@ public class ImageMetadataExtractor {
     }
     
     static class ExifHandler implements DirectoryHandler {
-        private static final SimpleDateFormat DATE_UNSPECIFIED_TZ = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        private static final ThreadLocal<SimpleDateFormat> DATE_UNSPECIFIED_TZ = new ThreadLocal<SimpleDateFormat>(){
+            @Override
+            protected SimpleDateFormat initialValue()
+            {
+                return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            }
+        };
         public boolean supports(Class<? extends Directory> directoryType) {
             return directoryType == ExifIFD0Directory.class || 
                     directoryType == ExifSubIFDDirectory.class;
@@ -290,10 +292,10 @@ public class ImageMetadataExtractor {
             
             if(directory.containsTag(ExifSubIFDDirectory.TAG_FLASH)) {
                String flash = directory.getDescription(ExifSubIFDDirectory.TAG_FLASH);
-               if(flash.indexOf("Flash fired") > -1) {
+               if(flash.contains("Flash fired")) {
                   metadata.set(Metadata.FLASH_FIRED, Boolean.TRUE.toString());
                }
-               else if(flash.indexOf("Flash did not fire") > -1) {
+               else if(flash.contains("Flash did not fire")) {
                   metadata.set(Metadata.FLASH_FIRED, Boolean.FALSE.toString());
                }
                else {
@@ -333,7 +335,7 @@ public class ImageMetadataExtractor {
             if(directory.containsTag(ExifIFD0Directory.TAG_ORIENTATION)) {
                Object length = directory.getObject(ExifIFD0Directory.TAG_ORIENTATION);
                if(length instanceof Integer) {
-                  metadata.set(Metadata.ORIENTATION, Integer.toString( ((Integer)length).intValue() ));
+                  metadata.set(Metadata.ORIENTATION, Integer.toString((Integer)length));
                } else {
                   metadata.set(Metadata.ORIENTATION, directory.getString(ExifIFD0Directory.TAG_ORIENTATION));
                }
@@ -381,7 +383,7 @@ public class ImageMetadataExtractor {
                 // Unless we have GPS time we don't know the time zone so date must be set
                 // as ISO 8601 datetime without timezone suffix (no Z or +/-)
                 if (original != null) {
-                    String datetimeNoTimeZone = DATE_UNSPECIFIED_TZ.format(original); // Same time zone as Metadata Extractor uses
+                    String datetimeNoTimeZone = DATE_UNSPECIFIED_TZ.get().format(original); // Same time zone as Metadata Extractor uses
                     metadata.set(TikaCoreProperties.CREATED, datetimeNoTimeZone);
                     metadata.set(Metadata.ORIGINAL_DATE, datetimeNoTimeZone);
                 }
@@ -389,7 +391,7 @@ public class ImageMetadataExtractor {
             if (directory.containsTag(ExifIFD0Directory.TAG_DATETIME)) {
                 Date datetime = directory.getDate(ExifIFD0Directory.TAG_DATETIME);
                 if (datetime != null) {
-                    String datetimeNoTimeZone = DATE_UNSPECIFIED_TZ.format(datetime);
+                    String datetimeNoTimeZone = DATE_UNSPECIFIED_TZ.get().format(datetime);
                     metadata.set(TikaCoreProperties.MODIFIED, datetimeNoTimeZone);
                     // If Date/Time Original does not exist this might be creation date
                     if (metadata.get(TikaCoreProperties.CREATED) == null) {
@@ -446,8 +448,8 @@ public class ImageMetadataExtractor {
             if (geoLocation != null) {
                 DecimalFormat geoDecimalFormat = new DecimalFormat(GEO_DECIMAL_FORMAT_STRING,
                         new DecimalFormatSymbols(Locale.ENGLISH));
-                metadata.set(TikaCoreProperties.LATITUDE, geoDecimalFormat.format(new Double(geoLocation.getLatitude())));
-                metadata.set(TikaCoreProperties.LONGITUDE, geoDecimalFormat.format(new Double(geoLocation.getLongitude())));
+                metadata.set(TikaCoreProperties.LATITUDE, geoDecimalFormat.format(geoLocation.getLatitude()));
+                metadata.set(TikaCoreProperties.LONGITUDE, geoDecimalFormat.format(geoLocation.getLongitude()));
             }
         }
     }

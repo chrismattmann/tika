@@ -186,13 +186,13 @@ public class SummaryExtractor {
                     metadata.set(prop, (Date)value);
                 } else if (value instanceof Boolean) {
                     Property prop = Property.externalBoolean(key);
-                    metadata.set(prop, ((Boolean)value).toString());
+                    metadata.set(prop, value.toString());
                 } else if (value instanceof Long) {
                     Property prop = Property.externalInteger(key);
                     metadata.set(prop, ((Long)value).intValue());
                 } else if (value instanceof Double) {
                     Property prop = Property.externalReal(key);
-                    metadata.set(prop, ((Double)value).doubleValue());
+                    metadata.set(prop, (Double)value);
                 } else if (value instanceof Integer) {
                     Property prop = Property.externalInteger(key);
                     metadata.set(prop, ((Integer)value).intValue());

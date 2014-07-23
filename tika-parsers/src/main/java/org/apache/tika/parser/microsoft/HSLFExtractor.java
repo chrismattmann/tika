@@ -135,7 +135,7 @@ public class HSLFExtractor extends AbstractPOIFSExtractor {
          if (notes == null) {
             continue;
          }
-         Integer id = Integer.valueOf(notes._getSheetNumber());
+         Integer id = notes._getSheetNumber();
          if (seenNotes.contains(id)) {
             continue;
          }
@@ -174,11 +174,10 @@ public class HSLFExtractor extends AbstractPOIFSExtractor {
       }
 
       xhtml.startElement("div", "class", "slide-master-content");
-      for (int i = 0; i < shapes.length; i++){
-         Shape sh = shapes[i];
-         if (sh != null && ! MasterSheet.isPlaceholder(sh)){
-            if (sh instanceof TextShape){
-               TextShape tsh = (TextShape)sh;
+      for (Shape shape : shapes){
+         if (shape != null && ! MasterSheet.isPlaceholder(shape)){
+            if (shape instanceof TextShape){
+               TextShape tsh = (TextShape)shape;
                String text = tsh.getText();
                if (text != null){
                   xhtml.element("p", text);

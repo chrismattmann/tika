@@ -23,7 +23,6 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.Set;
 import java.util.List;
-import java.util.Iterator;
 
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.io.IOUtils;
@@ -125,22 +124,17 @@ public class NetCDFParser extends AbstractParser {
 					xhtml.characters(" ");
 					xhtml.characters(var.getNameAndDimensions()); //variable name and dimensions
 					xhtml.characters(";");
-					//xhtml.newline();
 
 					xhtml.newline();
-			
-					List<Attribute> list = (var.getAttributes()); //list of variable attributes
-			
-						for(int i=0; i < list.size(); i++){ 
-     			
-     						Attribute element = (list.get(i));  
-     						String text = element.toString();
-							
-							xhtml.characters("	:");
-     						xhtml.characters(text); 
-     						xhtml.characters(";");
-							xhtml.newline();
-						}
+
+                    for(Attribute element : var.getAttributes()){
+                        String text = element.toString();
+
+                        xhtml.characters("	:");
+                        xhtml.characters(text);
+                        xhtml.characters(";");
+                        xhtml.newline();
+                    }
             	}   
 			
           xhtml.endDocument();

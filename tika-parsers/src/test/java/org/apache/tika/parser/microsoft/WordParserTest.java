@@ -163,16 +163,16 @@ public class WordParserTest extends TikaTest {
     @Test
     public void testEmbeddedRTF() throws Exception {
         String result = getXML("testWORD_embedded_rtf.doc").xml;
-        assertTrue(result.indexOf("<div class=\"embedded\" id=\"_1404039792\" />") != -1);
-        assertTrue(result.indexOf("_1404039792.rtf") != -1);
+        assertTrue(result.contains("<div class=\"embedded\" id=\"_1404039792\" />"));
+        assertTrue(result.contains("_1404039792.rtf"));
     }
 
     // TIKA-1019
     @Test
     public void testDocumentLink() throws Exception {
         String result = getXML("testDocumentLink.doc").xml;
-        assertTrue(result.indexOf("<div class=\"embedded\" id=\"_1327495610\" />") != -1);
-        assertTrue(result.indexOf("_1327495610.unknown") != -1);
+        assertTrue(result.contains("<div class=\"embedded\" id=\"_1327495610\" />"));
+        assertTrue(result.contains("_1327495610.unknown"));
     }
 
     @Test
@@ -381,5 +381,20 @@ public class WordParserTest extends TikaTest {
     @Test
     public void testControlCharacter() throws Exception {
       assertContains("1. Introduzione<b> </a></b> </p>", getXML("testControlCharacters.doc").xml.replaceAll("\\s+", " "));
+    }
+
+    @Test
+    public void testParagraphsAfterTables() throws Exception {
+        XMLResult result = getXML("test_TIKA-1251.doc");
+
+        String xml = result.xml;
+        Metadata metadata = result.metadata;
+
+        assertEquals(
+                "application/msword",
+                metadata.get(Metadata.CONTENT_TYPE));
+
+        assertContains("<p>1. Organisering av vakten:</p>", xml);
+
     }
 }

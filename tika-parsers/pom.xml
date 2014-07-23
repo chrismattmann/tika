@@ -39,7 +39,7 @@
     <codec.version>1.5</codec.version> <!-- NOTE: sync with POI -->
     <mime4j.version>0.7.2</mime4j.version>
     <vorbis.version>0.6</vorbis.version>
-    <pdfbox.version>1.8.5</pdfbox.version>
+    <pdfbox.version>1.8.6</pdfbox.version>
   </properties>
 
   <dependencies>
@@ -179,7 +179,7 @@
     <dependency>
       <groupId>rome</groupId>
       <artifactId>rome</artifactId>
-      <version>0.9</version>
+      <version>1.0</version>
     </dependency>
     <dependency>
       <groupId>org.gagravarr</groupId>
@@ -205,7 +205,7 @@
     <dependency>
     <groupId>com.pff</groupId>
       <artifactId>java-libpst</artifactId>
-      <version>0.7</version>
+      <version>0.8.1</version>
     </dependency>
 
     <!-- Test dependencies -->

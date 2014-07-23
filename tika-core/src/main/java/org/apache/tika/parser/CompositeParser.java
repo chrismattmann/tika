@@ -233,11 +233,12 @@ public class CompositeParser extends AbstractParser {
             InputStream stream, ContentHandler handler,
             Metadata metadata, ParseContext context)
             throws IOException, SAXException, TikaException {
-        Parser parser = getParser(metadata);
+        Parser parser = getParser(metadata, context);
         TemporaryResources tmp = new TemporaryResources();
         try {
             TikaInputStream taggedStream = TikaInputStream.get(stream, tmp);
-            TaggedContentHandler taggedHandler = new TaggedContentHandler(handler);
+            TaggedContentHandler taggedHandler = 
+                handler != null ? new TaggedContentHandler(handler) : null;
             try {
                 parser.parse(taggedStream, taggedHandler, metadata, context);
             } catch (RuntimeException e) {
@@ -248,7 +249,7 @@ public class CompositeParser extends AbstractParser {
                 throw new TikaException(
                         "TIKA-198: Illegal IOException from " + parser, e);
             } catch (SAXException e) {
-                taggedHandler.throwIfCauseOf(e);
+                if (taggedHandler != null) taggedHandler.throwIfCauseOf(e);
                 throw new TikaException(
                         "TIKA-237: Illegal SAXException from " + parser, e);
             }

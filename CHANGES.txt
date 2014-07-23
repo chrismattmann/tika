@@ -1,5 +1,11 @@
 Release 1.6 - ??/??/2014
 
+  * Tika now supports detection of the Persian/Farsi language.
+    (TIKA-1337)
+  
+  * The Tika Detector interface is now exposed through the JAX-RS
+    server (TIKA-1336, TIKA-1336).
+
   * Tika now has support for parsing binary Matlab files as part of 
     our larger effort to increase the number of scientific data formats 
     supported. (TIKA-1327)
@@ -21,7 +27,7 @@ Release 1.6 - ??/??/2014
   * Added ability to turn off image extraction from PDFs (TIKA-1294).
     Users must now turn on this capability via the PDFParserConfig.
 
-  * Upgrade to PDFBox 1.8.5 (TIKA-1290, TIKA-1231, TIKA-1233)
+  * Upgrade to PDFBox 1.8.6 (TIKA-1290, TIKA-1231, TIKA-1233, TIKA-1352)
 
   * Zip Container Detection for DWFX and XPS formats, which are OPC
     based (TIKA-1204, TIKA-1221)
@@ -49,6 +55,12 @@ Release 1.6 - ??/??/2014
 
   * PDF: Images in PDF documents can now be extracted as embedded resources.
     (TIKA-1268)
+
+  * Fixed RuntimeException thrown for certain Word Documents (TIKA-1251).
+
+  * CLI: TikaCLI now has another option: --list-parser-details-apt, which outputs
+    the list of supported parsers in APT format. This is used to generate the list
+    on the formats page (TIKA-411).
 
 Release 1.5 - 02/04/2014
 

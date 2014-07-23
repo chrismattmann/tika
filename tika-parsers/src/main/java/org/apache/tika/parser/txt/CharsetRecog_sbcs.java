@@ -1258,7 +1258,7 @@ abstract class CharsetRecog_sbcs extends CharsetRecognizer {
         }
         protected void matchInit(CharsetDetector det) 
         {
-            prev_fInputBytes = (byte[])det.fInputBytes.clone();
+            prev_fInputBytes = det.fInputBytes.clone();
             byte bb[] = unshape(det.fInputBytes);
             det.setText(bb);
         }
@@ -1284,12 +1284,11 @@ abstract class CharsetRecog_sbcs extends CharsetRecognizer {
             ByteBuffer resultBuffer;
             byte unshapedLamAlef[] = {(byte)0xb1, (byte)0x56};
 
-           
-            for (int i=0; i<inputBytes.length; i++){
-                if (isLamAlef(inputBytes[i]))
+            for (byte inputByte : inputBytes){
+                if (isLamAlef(inputByte))
                     resultBigBuffer.put(unshapedLamAlef);
                 else
-                    resultBigBuffer.put(inputBytes[i]);
+                    resultBigBuffer.put(inputByte);
             }
             resultBuffer = ByteBuffer.allocate(resultBigBuffer.position());
             resultBuffer.put(resultBigBuffer.array(),0, resultBigBuffer.position());
