@@ -409,6 +409,12 @@
       <scope>provided</scope>
     </dependency>
 
+    <dependency>
+      <groupId>edu.usc.ir</groupId>
+      <artifactId>sentiment-analysis-parser</artifactId>
+      <version>0.1</version>
+    </dependency>
+
     <!--Jackson parse String to JSON-->
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>

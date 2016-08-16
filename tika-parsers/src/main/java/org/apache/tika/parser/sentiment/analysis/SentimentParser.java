@@ -50,9 +50,9 @@ public class SentimentParser extends AbstractParser {
   private static final Logger LOG = Logger
       .getLogger(SentimentParser.class.getName());
 
-  private SentimentME sentiment;
+  private transient SentimentME sentiment;
   private URL modelUrl;
-  private File modelFile;
+  private transient File modelFile;
   private boolean initialised;
   private boolean available;
 
@@ -60,7 +60,6 @@ public class SentimentParser extends AbstractParser {
    * Constructor
    */
   public SentimentParser() {
-    System.out.println("Create sentiment parser");
   }
 
   /**
@@ -80,7 +79,6 @@ public class SentimentParser extends AbstractParser {
     }
 
     this.modelUrl = url;
-
     this.available = url != null;
 
     if (this.available) {
