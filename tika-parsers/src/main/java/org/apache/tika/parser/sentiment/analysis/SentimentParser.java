@@ -46,13 +46,12 @@ public class SentimentParser extends AbstractParser {
 
   private static final Set<MediaType> SUPPORTED_TYPES = Collections
       .singleton(MediaType.application("sentiment"));
-  public static final String HELLO_MIME_TYPE = "application/sentiment";
   private static final Logger LOG = Logger
       .getLogger(SentimentParser.class.getName());
 
-  private transient SentimentME sentiment;
+  private SentimentME sentiment;
   private URL modelUrl;
-  private transient File modelFile;
+  private File modelFile;
   private boolean initialised;
   private boolean available;
 
